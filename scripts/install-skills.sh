@@ -103,11 +103,20 @@ if [[ "$DEST" = /* ]]; then
 else
   DEST_ABS="$(pwd -P)/$DEST"
 fi
+DEST_ABS="$(normalize_abs_path "$DEST_ABS")"
 
 if [[ -e "$DEST_ABS" || -L "$DEST_ABS" ]]; then
   DEST_REAL="$(cd "$DEST_ABS" && pwd -P)"
 else
-  DEST_REAL="$(normalize_abs_path "$DEST_ABS")"
+  probe="$DEST_ABS"
+  suffix=""
+  while [[ ! -e "$probe" && ! -L "$probe" && "$probe" != "/" ]]; do
+    suffix="/$(basename "$probe")$suffix"
+    probe="$(dirname "$probe")"
+  done
+
+  probe_real="$(cd "$probe" && pwd -P)"
+  DEST_REAL="$(normalize_abs_path "$probe_real$suffix")"
 fi
 
 if [[ "$DEST_REAL" == "$SKILLS_ROOT_REAL" || "$DEST_REAL" == "$SKILLS_ROOT_REAL"/* ]]; then
