@@ -1,17 +1,77 @@
-# skills
+# Codex Skills
 
-Codex에서 재사용하는 커스텀 스킬을 모아두는 저장소입니다.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Shell](https://img.shields.io/badge/Installer-Bash-1f425f.svg)](scripts/install-skills.sh)
+[![Codex](https://img.shields.io/badge/For-Codex-blue.svg)](https://openai.com)
 
-## `.agents` 안에 꼭 있어야 하나?
+A curated collection of reusable Codex skills for day-to-day engineering workflows.
 
-아니요. `.agents`는 프로젝트 로컬 스킬용 경로일 뿐 필수는 아닙니다.
+This repository is intended for shared/global skills (typically installed under `~/.codex/skills`), while project-specific skills can live in each repo under `.agents/skills`.
 
-- 프로젝트 로컬 전용 스킬: `<project>/.agents/skills/...`
-- 전역/공용 스킬: `~/.codex/skills/...`
+## Table of Contents
 
-이 저장소는 전역/공용 스킬을 관리합니다.
+- [What This Repo Is For](#what-this-repo-is-for)
+- [Included Skills](#included-skills)
+- [Quick Start](#quick-start)
+- [Installer Options](#installer-options)
+- [Repository Layout](#repository-layout)
+- [How Skills Are Structured](#how-skills-are-structured)
+- [Development](#development)
+- [License](#license)
 
-## 저장소 구조
+## What This Repo Is For
+
+- Maintain reusable Codex skills in one place.
+- Install those skills into your Codex home directory.
+- Keep project-local skills separate from globally shared skills.
+
+Use:
+- Project-local skills: `<project>/.agents/skills/...`
+- Shared/global skills: `~/.codex/skills/...`
+
+## Included Skills
+
+- `create-pr`: Prepare issue-based branches and create/update PRs with draft-first workflow and labels.
+- `wip-issue`: Draft GitHub issues from staged changes or commits, including label suggestions.
+
+## Quick Start
+
+```bash
+git clone https://github.com/eunsoogi/skills.git
+cd skills
+bash scripts/install-skills.sh
+```
+
+Default behavior:
+- Source scan path: `skills/`
+- Destination path: `${CODEX_HOME:-$HOME/.codex}/skills`
+- Install mode: `copy`
+- Existing skill directory: skipped (unless `--force` is provided)
+
+Restart Codex after installation.
+
+## Installer Options
+
+```bash
+bash scripts/install-skills.sh --help
+```
+
+- `--dest <path>`: destination directory for installed skills
+- `--mode copy|symlink`: copy skill folders or install as symlinks
+- `--force`: overwrite existing destination skill directories
+- `-h, --help`: show help
+
+Examples:
+
+```bash
+# Symlink install for local iteration
+bash scripts/install-skills.sh --mode symlink --force
+
+# Install into a custom destination
+bash scripts/install-skills.sh --dest ~/.codex/skills --force
+```
+
+## Repository Layout
 
 ```text
 skills/
@@ -24,43 +84,26 @@ scripts/
   install-skills.sh
 ```
 
-각 스킬 디렉터리(`skills/<name>/`)에는 최소 `SKILL.md`가 필요합니다.
+## How Skills Are Structured
 
-## 설치 방법
+Each skill directory under `skills/<name>/` must include:
+- `SKILL.md` (required): trigger description and execution workflow
 
-```bash
-cd /Users/eunsoo/Documents/Git/skills
-./scripts/install-skills.sh
-```
+Optional:
+- `agents/openai.yaml`: UI-facing metadata for skill display and defaults
+- `scripts/`, `references/`, `assets/`: bundled resources when needed
 
-기본 동작:
+## Development
 
-- 스캔 경로: `skills/`
-- 대상 경로: `${CODEX_HOME:-~/.codex}/skills`
-- 설치 방식: `copy`
-- 기존 동일 이름 스킬이 있으면 skip
-
-설치 후 Codex 재시작이 필요합니다.
-
-## 설치 스크립트 옵션
+1. Update or add skills under `skills/`.
+2. Reinstall locally:
 
 ```bash
-./scripts/install-skills.sh --help
+bash scripts/install-skills.sh --force
 ```
 
-옵션:
+3. Restart Codex and validate the updated behavior.
 
-- `--dest <path>`: 설치 대상 경로 지정
-- `--mode copy|symlink`: 복사 또는 심볼릭링크 설치
-- `--force`: 기존 스킬 덮어쓰기
+## License
 
-예시:
-
-```bash
-./scripts/install-skills.sh --mode symlink --force
-```
-
-## 권장 운영 방식
-
-- 공용으로 재사용할 스킬: 이 저장소(`skills/`)에 관리
-- 프로젝트 문맥 강한 스킬: 각 프로젝트의 `.agents/skills`에 유지
+MIT. See [LICENSE](LICENSE).
