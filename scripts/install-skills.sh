@@ -65,14 +65,31 @@ if [[ ! -d "$SKILLS_ROOT" ]]; then
   exit 1
 fi
 
-mkdir -p "$DEST"
-
 SKILLS_ROOT_REAL="$(cd "$SKILLS_ROOT" && pwd -P)"
-DEST_REAL="$(cd "$DEST" && pwd -P)"
+if [[ "$DEST" = /* ]]; then
+  DEST_ABS="$DEST"
+else
+  DEST_ABS="$PWD/$DEST"
+fi
+
+if [[ -e "$DEST_ABS" || -L "$DEST_ABS" ]]; then
+  DEST_REAL="$(cd "$DEST_ABS" && pwd -P)"
+else
+  DEST_PARENT="$(dirname "$DEST_ABS")"
+  if [[ -d "$DEST_PARENT" || -L "$DEST_PARENT" ]]; then
+    DEST_PARENT_REAL="$(cd "$DEST_PARENT" && pwd -P)"
+    DEST_REAL="$DEST_PARENT_REAL/$(basename "$DEST_ABS")"
+  else
+    DEST_REAL="$DEST_ABS"
+  fi
+fi
+
 if [[ "$DEST_REAL" == "$SKILLS_ROOT_REAL" || "$DEST_REAL" == "$SKILLS_ROOT_REAL"/* ]]; then
   echo "Invalid --dest: $DEST (must not be inside source skills tree: $SKILLS_ROOT)" >&2
   exit 1
 fi
+
+mkdir -p "$DEST"
 
 SKILL_FILES=()
 while IFS= read -r f; do
