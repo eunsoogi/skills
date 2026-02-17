@@ -103,7 +103,6 @@ if [[ "$DEST" = /* ]]; then
 else
   DEST_ABS="$(pwd -P)/$DEST"
 fi
-DEST_ABS="$(normalize_abs_path "$DEST_ABS")"
 
 if [[ -e "$DEST_ABS" || -L "$DEST_ABS" ]]; then
   DEST_REAL="$(cd "$DEST_ABS" && pwd -P)"
