@@ -65,23 +65,49 @@ if [[ ! -d "$SKILLS_ROOT" ]]; then
   exit 1
 fi
 
+normalize_abs_path() {
+  local input="$1"
+  local part
+  local normalized="/"
+  local -a stack=()
+
+  IFS='/' read -r -a parts <<< "$input"
+  for part in "${parts[@]}"; do
+    if [[ -z "$part" || "$part" == "." ]]; then
+      continue
+    fi
+    if [[ "$part" == ".." ]]; then
+      if [[ ${#stack[@]} -gt 0 ]]; then
+        unset "stack[${#stack[@]}-1]"
+      fi
+      continue
+    fi
+    stack+=("$part")
+  done
+
+  if [[ ${#stack[@]} -eq 0 ]]; then
+    printf "/\n"
+    return
+  fi
+
+  normalized=""
+  for part in "${stack[@]}"; do
+    normalized="$normalized/$part"
+  done
+  printf "%s\n" "$normalized"
+}
+
 SKILLS_ROOT_REAL="$(cd "$SKILLS_ROOT" && pwd -P)"
 if [[ "$DEST" = /* ]]; then
   DEST_ABS="$DEST"
 else
-  DEST_ABS="$PWD/$DEST"
+  DEST_ABS="$(pwd -P)/$DEST"
 fi
 
 if [[ -e "$DEST_ABS" || -L "$DEST_ABS" ]]; then
   DEST_REAL="$(cd "$DEST_ABS" && pwd -P)"
 else
-  DEST_PARENT="$(dirname "$DEST_ABS")"
-  if [[ -d "$DEST_PARENT" || -L "$DEST_PARENT" ]]; then
-    DEST_PARENT_REAL="$(cd "$DEST_PARENT" && pwd -P)"
-    DEST_REAL="$DEST_PARENT_REAL/$(basename "$DEST_ABS")"
-  else
-    DEST_REAL="$DEST_ABS"
-  fi
+  DEST_REAL="$(normalize_abs_path "$DEST_ABS")"
 fi
 
 if [[ "$DEST_REAL" == "$SKILLS_ROOT_REAL" || "$DEST_REAL" == "$SKILLS_ROOT_REAL"/* ]]; then

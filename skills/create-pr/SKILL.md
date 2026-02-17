@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: "Create or recreate an issue branch named {owner}/issue{number} from main, push it, then create or update a GitHub Pull Request. Use when asked to create a PR, prepare and push an issue branch, or draft a PR body. Always show PR title/body draft first for approval, then apply appropriate labels."
+description: "Create or recreate an issue branch named {owner}/issue{number} from the repository default branch, push it, then create or update a GitHub Pull Request. Use when asked to create a PR, prepare and push an issue branch, or draft a PR body. Always show PR title/body draft first for approval, then apply appropriate labels."
 ---
 
 # Goal
@@ -11,18 +11,20 @@ description: "Create or recreate an issue branch named {owner}/issue{number} fro
 # Gather Context
 1. Confirm issue number (example: `123`).
 2. Resolve owner/repo from remote: `git remote get-url origin`.
-3. Sync base branch metadata: `git fetch origin main`.
-4. Check working tree status: `git status -sb`.
-5. Check staged files: `git diff --cached --name-only`.
-6. Check available repository labels before drafting final PR metadata.
+3. Resolve base branch dynamically from remote HEAD and store it as `BASE_BRANCH`.
+4. Sync base branch metadata: `git fetch origin "$BASE_BRANCH"`.
+5. Check working tree status: `git status -sb`.
+6. Check staged files: `git diff --cached --name-only`.
+7. Check available repository labels before drafting final PR metadata.
 
 # Issue Branch Rules
 1. If an issue number is provided, branch name must be `{owner}/issue{issueNumber}`.
 2. If a local branch with the same name exists, delete and recreate it.
-3. Always recreate from `main`.
+3. Always recreate from `BASE_BRANCH`.
 4. Recommended sequence:
-- `git switch main`
-- `git pull --ff-only origin main`
+- `BASE_BRANCH="$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')"` (fallback to `main` if empty)
+- `git switch "$BASE_BRANCH"`
+- `git pull --ff-only origin "$BASE_BRANCH"`
 - `git branch -D "{owner}/issue{issueNumber}"` (if it exists)
 - `git switch -c "{owner}/issue{issueNumber}"`
 
@@ -67,14 +69,14 @@ description: "Create or recreate an issue branch named {owner}/issue{number} fro
 1. Prepare `{owner}/issue{issueNumber}` branch.
 2. Commit staged files with an appropriate message, if any.
 3. Push the branch: `git push -u origin "{owner}/issue{issueNumber}"`.
-4. Check whether an open PR already exists for `head -> base(main)`.
+4. Check whether an open PR already exists for `head -> base(BASE_BRANCH)`.
 5. Show title/body/labels draft first and ask: "Create or update the PR with this draft?"
 6. After approval, create or update PR through GitHub MCP.
 7. Apply approved labels to the PR.
-8. Report PR URL, title, base/head, and applied labels.
+8. Report PR URL, title, base/head, resolved `BASE_BRANCH`, and applied labels.
 
 # Guardrails
 - Enforce issue branch naming without exception when issue number is provided.
 - Do not reuse existing local issue branch; recreate it.
-- Do not commit implementation work directly on `main`.
+- Do not commit implementation work directly on `BASE_BRANCH`.
 - If critical info is missing, ask one focused question at a time.
