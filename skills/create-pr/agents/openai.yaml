@@ -1,0 +1,14 @@
+interface:
+  display_name: "Create Pull Request"
+  short_description: "Draft and open a GitHub PR safely"
+  default_prompt: "Use $create-pr to prepare and open a pull request from my current branch."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "github"
+      description: "GitHub MCP server for PR lookup and creation"
+      transport: "streamable_http"
+
+policy:
+  allow_implicit_invocation: true
