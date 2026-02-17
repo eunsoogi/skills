@@ -67,6 +67,13 @@ fi
 
 mkdir -p "$DEST"
 
+SKILLS_ROOT_REAL="$(cd "$SKILLS_ROOT" && pwd -P)"
+DEST_REAL="$(cd "$DEST" && pwd -P)"
+if [[ "$DEST_REAL" == "$SKILLS_ROOT_REAL" || "$DEST_REAL" == "$SKILLS_ROOT_REAL"/* ]]; then
+  echo "Invalid --dest: $DEST (must not be inside source skills tree: $SKILLS_ROOT)" >&2
+  exit 1
+fi
+
 SKILL_FILES=()
 while IFS= read -r f; do
   SKILL_FILES+=("$f")
