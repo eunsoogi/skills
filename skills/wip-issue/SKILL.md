@@ -1,24 +1,11 @@
 ---
 name: wip-issue
-description: Analyze current staged changes or latest commit and create a GitHub issue draft/body from the findings.
+description: Analyze current staged changes or latest commit, draft a GitHub issue title/body from findings, and apply appropriate existing labels after user approval.
 ---
 
 # WIP Issue
 
 Create GitHub issues from current git work state (staged diff or latest commit).
-
-## When to use
-
-Use this skill when the user asks to create/write a GitHub issue based on:
-- current staged changes
-- a specific commit
-- the latest commit
-- current WIP status in a git repository
-
-## Required tools
-
-- `git`
-- `gh`
 
 ## Steps
 
@@ -51,7 +38,7 @@ git show --name-status --stat --pretty=fuller <SHA>
 git show <SHA>
 ```
 
-4. Build issue draft in this structure.
+4. Build issue draft with this structure.
 
 ```markdown
 ## Summary
@@ -82,29 +69,40 @@ git show <SHA>
 - [ ] Rollback plan confirmed
 ```
 
-5. Propose title format.
+5. Propose title.
 
 - `feat: <short change goal>`
 - `fix: <bug symptom>`
 - `refactor: <area>`
 - `chore: <maintenance item>`
 
-6. Before creating issue, show title/body draft and get user approval.
+6. Propose labels from existing repository labels.
+- Inspect current labels before finalizing draft (for example: `gh label list`).
+- Select 1 to 3 labels that match intent and risk.
+- Prefer existing repository conventions over generic guesses.
+- Typical mapping:
+  - `feat` -> `enhancement`
+  - `fix` -> `bug`
+  - `docs` -> `documentation`
+  - `refactor/chore` -> `maintenance`
+- If no suitable label exists, proceed without labels unless user explicitly asks to create new ones.
 
-7. Create issue with `gh` after approval.
+7. Before creating issue, show title/body/labels draft and get user approval.
+
+8. Create issue with `gh` after approval.
 
 ```bash
-gh issue create --title "<TITLE>" --body-file <BODY_FILE>
+gh issue create --title "<TITLE>" --body-file <BODY_FILE> --label "<LABEL_1>" --label "<LABEL_2>"
 ```
 
 If repo is ambiguous, use:
 
 ```bash
-gh issue create -R owner/repo --title "<TITLE>" --body-file <BODY_FILE>
+gh issue create -R owner/repo --title "<TITLE>" --body-file <BODY_FILE> --label "<LABEL_1>" --label "<LABEL_2>"
 ```
 
 ## Rules
 
-- Never create issue without showing draft first unless user explicitly says to proceed immediately.
+- Never create an issue without showing title/body/labels draft first, unless user explicitly says to proceed immediately.
 - Prefer concrete file and behavior references over vague summaries.
 - If both staged changes and commit SHA are provided, prioritize user-specified commit SHA.
