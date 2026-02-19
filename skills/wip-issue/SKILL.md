@@ -47,7 +47,6 @@ git show <SHA>
 
 ## Scope
 
-- Files touched:
 - Components affected:
 - Behavioral impact:
 
@@ -104,5 +103,7 @@ gh issue create -R owner/repo --title "<TITLE>" --body-file <BODY_FILE> --label 
 ## Rules
 
 - Never create an issue without showing title/body/labels draft first, unless user explicitly says to proceed immediately.
+- Do not include a `Files touched` list in the issue body.
 - Prefer concrete file and behavior references over vague summaries.
 - If both staged changes and commit SHA are provided, prioritize user-specified commit SHA.
+- Write in issue-reporting tone: describe the current problem, impact, and expected behavior; do not imply the issue is already resolved.
