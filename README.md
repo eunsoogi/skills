@@ -31,8 +31,7 @@ Use:
 
 ## Included Skills
 
-- `create-pr`: Prepare issue-based branches and create/update PRs with draft-first workflow and labels.
-- `wip-issue`: Draft GitHub issues from staged changes or commits, including label suggestions.
+- `git-workflow`: End-to-end GitHub delivery workflow with issue drafting/updating, branch/PR publishing, review response, squash merge, and post-merge cleanup.
 
 ## Quick Start
 
@@ -75,11 +74,9 @@ bash scripts/install-skills.sh --dest ~/.codex/skills --force
 
 ```text
 skills/
-  create-pr/
+  git-workflow/
     SKILL.md
     agents/openai.yaml
-  wip-issue/
-    SKILL.md
 scripts/
   install-skills.sh
 ```

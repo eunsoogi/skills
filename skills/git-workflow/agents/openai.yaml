@@ -1,0 +1,14 @@
+interface:
+  display_name: "Git Workflow"
+  short_description: "Run end-to-end Git and GitHub workflows"
+  default_prompt: "Use $git-workflow to handle issue drafting, PR updates, review responses, and merge cleanup for my current work."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "github"
+      description: "GitHub MCP server for issues, PRs, reviews, and merge actions"
+      transport: "streamable_http"
+
+policy:
+  allow_implicit_invocation: true
