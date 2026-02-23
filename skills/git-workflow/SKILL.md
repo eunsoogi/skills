@@ -37,12 +37,15 @@ description: "End-to-end Git and GitHub workflow in one skill: analyze staged ch
 - If issue number is known and current branch is neither `BASE_BRANCH` nor `{BRANCH_CREATOR}/issue{issueNumber}`, treat it as wrong-branch work.
 2. Ask before moving staged changes.
 - Ask: "Staged changes are on `<CURRENT_BRANCH>` instead of `BASE_BRANCH` (`<BASE_BRANCH>`). Move staged changes to `BASE_BRANCH` and continue from there?"
-3. If user approves, move only staged changes to `BASE_BRANCH`.
+3. Check unstaged changes before switching branches.
+- If `git diff --name-only` is not empty, ask user to stash, commit, or discard unstaged changes first.
+- Do not run `git switch "$BASE_BRANCH"` while unstaged changes remain in the working tree.
+4. If user approves and unstaged changes are cleared, move only staged changes to `BASE_BRANCH`.
 - `git stash push --staged -m "git-workflow: move staged from <CURRENT_BRANCH> to <BASE_BRANCH>"`
 - `git switch "$BASE_BRANCH"`
 - `git pull --ff-only origin "$BASE_BRANCH"`
 - `git stash pop`
-4. If user declines, continue on current branch only after explicit confirmation.
+5. If user declines, continue on current branch only after explicit confirmation.
 
 # Evidence Collection
 1. Staged mode:
@@ -131,5 +134,6 @@ description: "End-to-end Git and GitHub workflow in one skill: analyze staged ch
 - Do not publish issue or PR without showing drafts first and getting approval.
 - Do not reuse an old local issue branch; recreate from `BASE_BRANCH`.
 - If staged changes are detected on a wrong branch, ask whether to move them to `BASE_BRANCH` before proceeding.
+- If unstaged changes exist, do not switch branches until user decides how to handle unstaged work.
 - Do not commit implementation work directly on `BASE_BRANCH`.
 - Ask one focused clarification question if critical information is missing.
