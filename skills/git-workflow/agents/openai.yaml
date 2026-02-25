@@ -1,7 +1,7 @@
 interface:
   display_name: "Git Workflow"
-  short_description: "Run end-to-end Git/GitHub workflows with issue worktrees"
-  default_prompt: "Use $git-workflow to draft issues, create issue-scoped Git Worktrees, move local changes safely, update PRs, handle reviews, and clean up after merge."
+  short_description: "Run end-to-end Git and GitHub workflows"
+  default_prompt: "Use $git-workflow to handle issue drafting, PR updates, review responses, and merge cleanup for my current work."
 
 dependencies:
   tools:
